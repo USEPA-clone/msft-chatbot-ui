@@ -1,0 +1,202 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "HostingPlanName": {
+            "type": "string",
+            "defaultValue": "[guid(resourceGroup().id)]",
+            "metadata": {
+                "description": "Name of App Service plan"
+            }
+        },
+        "HostingPlanSku": {
+            "type": "string",
+            "defaultValue": "B3",
+            "allowedValues": [
+                "F1",
+                "D1",
+                "B1",
+                "B2",
+                "B3",
+                "S1",
+                "S2",
+                "S3",
+                "P1",
+                "P2",
+                "P3",
+                "P4"
+            ],
+            "metadata": {
+                "description": "The pricing tier for the App Service plan"
+            }
+        },
+        "WebsiteName": {
+            "type": "string",
+            "defaultValue": "[guid(resourceGroup().id)]",
+            "metadata": {
+                "description": "Name of Web App"
+            }
+        },
+        "ApplicationInsightsName": {
+            "type": "string",
+            "defaultValue": "[guid(resourceGroup().id)]",
+            "metadata": {
+                "description": "Name of Application Insights"
+            }
+        },
+        "OPENAI_API_KEY": {
+            "type": "string",
+            "defaultValue": "azure",
+            "metadata": {
+                "description": "he API type, options are openai or azure"
+            }
+        },
+        "OPENAI_API_HOST": {
+            "type": "string",
+            "defaultValue": "https://api.openai.com",
+            "metadata": {
+                "description": "The base url, for Azure use https://<endpoint>.openai.azure.com. If using APIM enter the URI of the APIM instance. When using APIM set to the APIM URL for the Azure Open AI."
+            }
+        },
+         "OPENAI_API_TYPE": {
+            "type": "string",
+            "defaultValue": "azure",
+            "metadata": {
+                "description": "he API type, options are openai or azure"
+            }
+        },
+        "OPENAI_API_VERSION": {
+            "type": "string",
+            "defaultValue": "2023-03-15-preview",
+            "metadata": {
+                "description": "Only applicable for Azure OpenAI"
+            }
+        },
+        "AZURE_DEPLOYMENT_ID": {
+            "type": "string",
+            "defaultValue": "gpt-35-turbo",
+            "metadata": {
+                "description": "The default model to use on new conversations, for Azure use gpt-35-turbo"
+            }
+        },
+        "NEXT_PUBLIC_DEFAULT_SYSTEM_PROMPT": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The default system prompt to use on new conversations. Leave blank for default"
+            }
+        },
+        "NEXT_PUBLIC_DEFAULT_TEMPERATURE": {
+            "type": "string",
+            "defaultValue": "1",
+            "metadata": {
+                "description": "The default temperature to use on new conversations"
+            }
+        },
+        "NODE_TLS_REJECT_UNAUTHORIZED": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Set to 0 if using a self signed cert to prevent TLS errors."
+            }
+        },
+    },
+    "variables": {
+        "WebAppImageName": "DOCKER|ghcr.io/usepa/msft-chatbot-ui:main",
+        "roleDefinitionId": "00000000-0000-0000-0000-000000000002",
+        "roleAssignmentId": "[guid(variables('roleDefinitionId'), parameters('WebsiteName'))]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2020-06-01",
+            "name": "[parameters('HostingPlanName')]",
+            "type": "Microsoft.Web/serverfarms",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "[parameters('HostingPlanSku')]"
+            },
+            "properties": {
+                "name": "[parameters('HostingPlanName')]",
+                "reserved": true
+            },
+            "kind": "linux"
+        },
+        {
+            "apiVersion": "2020-06-01",
+            "name": "[parameters('WebsiteName')]",
+            "type": "Microsoft.Web/sites",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('HostingPlanName'))]"
+            ],
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "serverFarmId": "[parameters('HostingPlanName')]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', parameters('ApplicationInsightsName')), '2015-05-01').InstrumentationKey]"
+                        }
+                        {
+                            "name": "OPENAI_API_KEY",
+                            "value": "[parameters('OPENAI_API_KEY')]"
+                        },
+
+                        {
+                            "name": "OPENAI_API_HOST",
+                            "value": "[parameters('OPENAI_API_HOST')]"
+                        },
+
+                        {
+                            "name": "OPENAI_API_TYPE",
+                            "value": "[parameters('OPENAI_API_TYPE')]"
+                        },
+
+                        {
+                            "name": "OPENAI_API_VERSION",
+                            "value": "[parameters('OPENAI_API_VERSION')]"
+                        },
+
+                        {
+                            "name": "AZURE_DEPLOYMENT_ID",
+                            "value": "[parameters('AZURE_DEPLOYMENT_ID')]"
+                        },
+
+                        {
+                            "name": "NEXT_PUBLIC_DEFAULT_SYSTEM_PROMPT",
+                            "value": "[parameters('NEXT_PUBLIC_DEFAULT_SYSTEM_PROMPT')]"
+                        },
+
+                        {
+                            "name": "NEXT_PUBLIC_DEFAULT_TEMPERATURE",
+                            "value": "[parameters('NEXT_PUBLIC_DEFAULT_TEMPERATURE')]"
+                        },
+
+                        {
+                            "name": "NODE_TLS_REJECT_UNAUTHORIZED",
+                            "value": "[parameters('NODE_TLS_REJECT_UNAUTHORIZED')]"
+                        },
+           
+                    ],
+                    "linuxFxVersion": "[variables('WebAppImageName')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Insights/components",
+            "apiVersion": "2020-02-02",
+            "name": "[parameters('ApplicationInsightsName')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "[concat('hidden-link:', resourceId('Microsoft.Web/sites', parameters('ApplicationInsightsName')))]": "Resource"
+            },
+            "properties": {
+                "Application_Type": "web"
+            },
+            "kind": "web"
+        }
+    ]
+}
