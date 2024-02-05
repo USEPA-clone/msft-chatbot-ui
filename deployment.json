@@ -99,7 +99,7 @@
             "metadata": {
                 "description": "Set to 0 if using a self signed cert to prevent TLS errors."
             }
-        },
+        }
     },
     "variables": {
         "WebAppImageName": "DOCKER|ghcr.io/usepa/msft-chatbot-ui:main",
@@ -139,7 +139,7 @@
                         {
                             "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
                             "value": "[reference(resourceId('Microsoft.Insights/components', parameters('ApplicationInsightsName')), '2015-05-01').InstrumentationKey]"
-                        }
+                        },
                         {
                             "name": "OPENAI_API_KEY",
                             "value": "[parameters('OPENAI_API_KEY')]"
@@ -178,7 +178,7 @@
                         {
                             "name": "NODE_TLS_REJECT_UNAUTHORIZED",
                             "value": "[parameters('NODE_TLS_REJECT_UNAUTHORIZED')]"
-                        },
+                        }
            
                     ],
                     "linuxFxVersion": "[variables('WebAppImageName')]"
