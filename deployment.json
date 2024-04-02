@@ -125,6 +125,8 @@
             "apiVersion": "2020-06-01",
             "name": "[parameters('WebsiteName')]",
             "type": "Microsoft.Web/sites",
+            "httpsOnly": true,
+            "minTlsVersion": "1.2",
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', parameters('HostingPlanName'))]"
