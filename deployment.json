@@ -6,7 +6,7 @@
             "type": "string",
             "defaultValue": "[guid(resourceGroup().id)]",
             "metadata": {
-                "description": "Name of App Service plan"
+                "description": "Name of App Service plan."
             }
         },
         "HostingPlanSku": {
@@ -27,33 +27,33 @@
                 "P4"
             ],
             "metadata": {
-                "description": "The pricing tier for the App Service plan"
+                "description": "The pricing tier for the App Service plan. For testing I used B3."
             }
         },
         "WebsiteName": {
             "type": "string",
             "defaultValue": "[guid(resourceGroup().id)]",
             "metadata": {
-                "description": "Name of Web App"
+                "description": "Name of Web App. You can leave the [guid] if you want and a random name will be generated."
             }
         },
         "ApplicationInsightsName": {
             "type": "string",
             "defaultValue": "[guid(resourceGroup().id)]",
             "metadata": {
-                "description": "Name of Application Insights"
+                "description": "Name of Application Insights. You can leave the [guid] if you want and a random name will be generated."
             }
         },
         "OPENAI_API_KEY": {
             "type": "string",
-            "defaultValue": "azure",
+            "defaultValue": "CHANGEME",
             "metadata": {
-                "description": "he API type, options are openai or azure"
+                "description": "The api key for azure open. The key you get from the 'keys and endpoints' tab. "
             }
         },
         "OPENAI_API_HOST": {
             "type": "string",
-            "defaultValue": "https://api.openai.com",
+            "defaultValue": "https://<endpoint CHANGEME>.openai.azure.com",
             "metadata": {
                 "description": "The base url, for Azure use https://<endpoint>.openai.azure.com. If using APIM enter the URI of the APIM instance. When using APIM set to the APIM URL for the Azure Open AI."
             }
@@ -62,35 +62,35 @@
             "type": "string",
             "defaultValue": "azure",
             "metadata": {
-                "description": "he API type, options are openai or azure"
+                "description": "The API type, options are openai or azure. Leave as azure"
             }
         },
         "OPENAI_API_VERSION": {
             "type": "string",
             "defaultValue": "2023-03-15-preview",
             "metadata": {
-                "description": "Only applicable for Azure OpenAI"
+                "description": "Only applicable for Azure OpenAI. This is the API version not the model version."
             }
         },
         "AZURE_DEPLOYMENT_ID": {
             "type": "string",
-            "defaultValue": "gpt-35-turbo",
+            "defaultValue": "my-gpt-35-turbo-CHANGEME",
             "metadata": {
-                "description": "The default model to use on new conversations, for Azure use gpt-35-turbo"
+                "description": "Needs to be changed! Find this in the model deployments, its the deployment name"
             }
         },
         "NEXT_PUBLIC_DEFAULT_SYSTEM_PROMPT": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
-                "description": "The default system prompt to use on new conversations. Leave blank for default"
+                "description": "Leave blank for default. The default system prompt to use on new conversations. "
             }
         },
         "NEXT_PUBLIC_DEFAULT_TEMPERATURE": {
             "type": "string",
             "defaultValue": "1",
             "metadata": {
-                "description": "The default temperature to use on new conversations"
+                "description": "You can leave as 1. The default temperature to use on new conversations"
             }
         },
         "NODE_TLS_REJECT_UNAUTHORIZED": {
